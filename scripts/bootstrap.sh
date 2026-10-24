@@ -14,11 +14,43 @@ backup_if_exists() {
   fi
 }
 
+sync_clean_skills_dir() {
+  local target_skills_dir="$1"
+  local label="$2"
+  mkdir -p "$target_skills_dir"
+
+  # Archive and remove any non-symlink (unmanaged/bloat) skills or manifests
+  for existing in "$target_skills_dir"/* "$target_skills_dir"/.*; do
+    local base
+    base="$(basename "$existing")"
+    if [ "$base" = "." ] || [ "$base" = ".." ]; then
+      continue
+    fi
+    if [ -e "$existing" ] || [ -L "$existing" ]; then
+      if [ ! -L "$existing" ]; then
+        mkdir -p "$BACKUP_DIR/${label}-unmanaged-skills"
+        mv "$existing" "$BACKUP_DIR/${label}-unmanaged-skills/$base"
+      else
+        rm -f "$existing"
+      fi
+    fi
+  done
+
+  # Link exclusively the curated playbook skills
+  for skill_path in "$PLAYBOOK_DIR/skills"/*; do
+    if [ -d "$skill_path" ]; then
+      local skill_name
+      skill_name="$(basename "$skill_path")"
+      ln -sfn "$skill_path" "$target_skills_dir/$skill_name"
+    fi
+  done
+}
+
 echo "=== Bootstrapping MSlegro Agent Playbook from $PLAYBOOK_DIR ==="
 
 # 1. Google Antigravity (~/.gemini/config)
 AGY_CONFIG="$HOME/.gemini/config"
-mkdir -p "$AGY_CONFIG/skills"
+mkdir -p "$AGY_CONFIG"
 
 backup_if_exists "$AGY_CONFIG/AGENTS.md"
 backup_if_exists "$AGY_CONFIG/GEMINI.md"
@@ -31,62 +63,24 @@ ln -sfn "$PLAYBOOK_DIR/core" "$AGY_CONFIG/core"
 ln -sfn "$PLAYBOOK_DIR/adapters/antigravity/skills.json" "$AGY_CONFIG/skills.json"
 ln -sfn "$PLAYBOOK_DIR/adapters/antigravity/hooks.json" "$AGY_CONFIG/hooks.json"
 
-# Link all playbook skills into ~/.gemini/config/skills while keeping existing GCP skills intact
-for skill_path in "$PLAYBOOK_DIR/skills"/*; do
-  if [ -d "$skill_path" ]; then
-    skill_name="$(basename "$skill_path")"
-    ln -sfn "$skill_path" "$AGY_CONFIG/skills/$skill_name"
-  fi
-done
-echo "[antigravity] Linked AGENTS.md, GEMINI.md, core/, hooks.json, skills.json and playbook skills into $AGY_CONFIG"
+sync_clean_skills_dir "$AGY_CONFIG/skills" "antigravity"
+echo "[antigravity] Cleaned bloat skills and linked $(ls -1d "$PLAYBOOK_DIR/skills"/* | wc -l) playbook entries into $AGY_CONFIG/skills"
 
-# Merge engram, context7, and serena into ~/.gemini/config/mcp_config.json safely
+# Write clean MCP servers config (removing dead/disabled datacloud entries)
 MCP_CONFIG="$AGY_CONFIG/mcp_config.json"
-python3 - "$MCP_CONFIG" "$PLAYBOOK_DIR/adapters/antigravity/mcp_config.template.json" <<'PY'
-import json
-import sys
-from pathlib import Path
-
-target_path = Path(sys.argv[1])
-template_path = Path(sys.argv[2])
-
-template_data = json.loads(template_path.read_text(encoding="utf-8"))
-if target_path.exists():
-    try:
-        current_data = json.loads(target_path.read_text(encoding="utf-8"))
-    except Exception:
-        current_data = {"mcpServers": {}}
-else:
-    current_data = {"mcpServers": {}}
-
-current_data.setdefault("mcpServers", {})
-for name, cfg in template_data.get("mcpServers", {}).items():
-    current_data["mcpServers"][name] = cfg
-
-target_path.write_text(json.dumps(current_data, indent=2) + "\n", encoding="utf-8")
-print(f"[antigravity] Updated MCP servers in {target_path}")
-PY
+cp "$PLAYBOOK_DIR/adapters/antigravity/mcp_config.template.json" "$MCP_CONFIG"
+echo "[antigravity] Synced clean MCP servers in $MCP_CONFIG"
 
 # 2. OpenCode (~/.config/opencode)
 OPENCODE_DIR="$HOME/.config/opencode"
-mkdir -p "$OPENCODE_DIR/skills"
+mkdir -p "$OPENCODE_DIR"
 
 backup_if_exists "$OPENCODE_DIR/AGENTS.md"
 ln -sfn "$PLAYBOOK_DIR/AGENTS.md" "$OPENCODE_DIR/AGENTS.md"
 ln -sfn "$PLAYBOOK_DIR/core" "$OPENCODE_DIR/core"
 
-# Remove retired sdd-* skills and broken legacy skills from ~/.config/opencode/skills
-rm -rf "$OPENCODE_DIR/skills"/sdd-*
-rm -rf "$OPENCODE_DIR/skills/nodejs-backend-patterns"
-
-for skill_path in "$PLAYBOOK_DIR/skills"/*; do
-  if [ -d "$skill_path" ]; then
-    skill_name="$(basename "$skill_path")"
-    rm -rf "$OPENCODE_DIR/skills/$skill_name"
-    ln -sfn "$skill_path" "$OPENCODE_DIR/skills/$skill_name"
-  fi
-done
-echo "[opencode] Linked AGENTS.md, core/, and $(ls -1d "$PLAYBOOK_DIR/skills"/* | wc -l) skills into $OPENCODE_DIR"
+sync_clean_skills_dir "$OPENCODE_DIR/skills" "opencode"
+echo "[opencode] Cleaned legacy skills and linked $(ls -1d "$PLAYBOOK_DIR/skills"/* | wc -l) playbook entries into $OPENCODE_DIR/skills"
 
 # 3. Claude Code (~/.claude)
 CLAUDE_DIR="$HOME/.claude"

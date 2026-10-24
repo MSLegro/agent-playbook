@@ -121,6 +121,10 @@ def main() -> int:
         else:
             if not fm.get("name"):
                 errors.append(f"skills/{item.name}/SKILL.md: frontmatter missing 'name'")
+            if fm.get("disable-model-invocation") == "true":
+                errors.append(
+                    f"skills/{item.name}/SKILL.md: 'disable-model-invocation: true' hides skill from agent"
+                )
             desc = fm.get("description", "")
             if not desc:
                 errors.append(f"skills/{item.name}/SKILL.md: frontmatter missing 'description'")
