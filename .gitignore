@@ -1,0 +1,12 @@
+.DS_Store
+Thumbs.db
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.env.*
+!.env.example
+node_modules/
+.tmp/
+*.bak
+*.swp

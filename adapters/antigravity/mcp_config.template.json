@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "engram": {
+      "command": "/home/ms-legro/.local/bin/engram",
+      "args": ["mcp", "--tools=agent"]
+    },
+    "context7": {
+      "serverUrl": "https://mcp.context7.com/mcp"
+    },
+    "serena": {
+      "command": "/home/ms-legro/.local/bin/uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server",
+        "--context",
+        "ide-assistant"
+      ]
+    }
+  }
+}
