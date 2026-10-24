@@ -60,7 +60,7 @@ Reemplaza las cascadas rígidas por un flujo adaptativo que escala según la com
 - **Delegate (`Subagent-First`)**: Mantiene el hilo principal limpio delegando exploración e implementación pesada a subagentes aislados.
 - **Verify (`3-2-1 Rule`)**: Verifica contra criterios de aceptación y tests reales; si hay `3` intentos fallidos, `2` regresiones o `1` contradicción de diseño, detiene parches y re-analiza la causa raíz.
 
-### 2. Las 10 Leyes Arquitectónicas (Estándar ATLAS)
+### 2. Las 10 Leyes Arquitectónicas
 1. **Dependencia Unidireccional Estricta**: `domain/` <- `application/` <- `infrastructure/`.
 2. **Inyección de Dependencias Explícita (`tsyringe`)**: Prohibido instanciar adaptadores con `new` dentro de casos de uso.
 3. **Prohibición de `any`**: Tipado estricto en todo el proyecto; validación en bordes con `zod`.
