@@ -5,7 +5,7 @@
       "args": ["mcp", "--tools=agent"]
     },
     "context7": {
-      "serverUrl": "https://mcp.context7.com/mcp"
+      "url": "https://mcp.context7.com/mcp"
     },
     "serena": {
       "command": "/home/ms-legro/.local/bin/uvx",

@@ -12,8 +12,12 @@ fi
 mkdir -p "$TARGET_DIR/.agents"
 cat > "$TARGET_DIR/.agents/skills.json" <<EOF
 {
-  "version": 1,
-  "skillsDir": "$PLAYBOOK_DIR/skills"
+  "entries": [
+    {
+      "path": "$PLAYBOOK_DIR/skills",
+      "exclude": ["_shared"]
+    }
+  ]
 }
 EOF
 

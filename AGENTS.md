@@ -85,8 +85,8 @@ Cada solicitud entra automáticamente en el protocolo **ODD de 7 pasos** en este
 ## 5. Git, Seguridad y Guardrails
 
 - **Conventional Commits obligatorios (`feat:`, `fix:`, `refactor:`, etc.) y CERO atribución de IA:** Prohibido añadir `Co-Authored-By:` o firmas de IA.
-- **Permisos autónomos (`ALLOW`):** Lectura de código, edición dentro de `## Allowed edit surfaces`, ejecución de tests (`vitest`, `playwright`, `pytest`, `go test`), linters y compilación.
-- **Confirmación humana obligatoria (`ASK`):** Antes de `git push`, `git push --force`, `git reset --hard`, `git rebase`, `gh pr merge` o borrado de datos (`DROP`, `TRUNCATE`, `rm -rf`).
+- **Permisos autónomos (`ALLOW`):** Lectura de código, edición dentro de `## Allowed edit surfaces`, ejecución de tests (`vitest`, `playwright`, `pytest`, `go test`), linters, compilación, commits locales y **`git push` / `gh pr create` cuando el usuario lo solicite en su prompt** (aplicando siempre pre-checks: tests/typecheck en verde, cero secretos y cero `Co-Authored-By`).
+- **Confirmación humana obligatoria (`ASK`):** `git push` no solicitado por el usuario, o cualquier operación destructiva/irreversible (`git push --force`, `git reset --hard`, `git rebase`, `gh pr merge`, `DROP`, `TRUNCATE`, `rm -rf`).
 - **Deny-list de Secretos:** Prohibido leer, imprimir o comitear `.env`, `.env.*`, `credentials.json`, `*.pem`, `*.key` o credenciales reales.
 
 ---

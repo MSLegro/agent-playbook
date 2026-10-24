@@ -7,7 +7,8 @@
 | **Lectura y Exploración** | `ALLOW` (Autónomo) | `rg`, `find`, `git status`, `git diff`, `git log`, lectura de código y tests |
 | **Edición dentro del Alcance Autorizado** | `ALLOW` (Autónomo) | Crear/editar archivos de código y tests dentro de `## Allowed edit surfaces` |
 | **Verificación y Compilación** | `ALLOW` (Autónomo) | `pnpm test`, `vitest`, `pytest`, `go test`, `tsc --noEmit`, `eslint`, `oxlint` |
-| **Operaciones Remotas o de Historial Git** | `ASK` (Confirmación obligatoria) | `git push`, `git push --force`, `git rebase`, `git reset --hard`, `gh pr merge` |
+| **Push / PR Solicitado por el Usuario** | `ALLOW` (Con Pre-Checks) | `git push`, `gh pr create` cuando el usuario lo pide en su prompt (tras validar tests, linter y cero secretos) |
+| **Push No Solicitado o Historial Git** | `ASK` (Confirmación obligatoria) | `git push` (si no fue pedido), `git push --force`, `git rebase`, `git reset --hard`, `gh pr merge` |
 | **Operaciones Destructivas de Datos o Sistema** | `ASK` (Confirmación obligatoria) | `DROP TABLE`, `TRUNCATE`, `DELETE` sin `WHERE`, `rm -rf` fuera de `/tmp`, matar procesos ajenos |
 
 ---

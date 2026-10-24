@@ -22,4 +22,7 @@
 
 ## 3. Gestión de Ramas y Entrega
 - Antes de iniciar una implementación grande (ODD *Large*), asegúrate de estar en una rama de feature descriptiva (`feat/<nombre>`, `fix/<nombre>`, `refactor/<nombre>`), nunca comiteando trabajo incompleto directamente sobre `main` o `master` salvo instrucción explícita del usuario.
-- Los commits locales por unidad de trabajo en la rama de la feature son parte del flujo normal autorizado; sin embargo, **`git push`, la creación de Pull Requests (`gh pr create`) y los merges requieren siempre autorización explícita del usuario**.
+- **Política de `git push` y Pull Requests:**
+  - **Si el usuario lo pide en el prompt** (ej. *"haz push"*, *"súbelo"*, *"crea el PR"*): ejecútalo **directamente sin pedir doble confirmación**, verificando siempre antes las buenas prácticas (typecheck/tests/linter en verde, revisión de `git status` / `git diff` sin secretos y Conventional Commits sin `Co-Authored-By`).
+  - **Si el usuario NO lo pidió en el prompt:** mantén los commits en local y pregunta antes de hacer `git push`.
+  - **Reescritura de historial o merges (`git push --force`, `git reset --hard`, `git rebase`, `gh pr merge`):** requieren confirmación explícita siempre.

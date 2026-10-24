@@ -1,4 +1,8 @@
 {
-  "version": 1,
-  "skillsDir": "/home/ms-legro/.config/agent-playbook/skills"
+  "entries": [
+    {
+      "path": "/home/ms-legro/.config/agent-playbook/skills",
+      "exclude": ["_shared"]
+    }
+  ]
 }
